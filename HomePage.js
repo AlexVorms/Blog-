@@ -88,3 +88,50 @@ function prevPage() {
 
     document.getElementById("nextPage").style.visibility = "visible";
 }
+
+function LoadPost(id){
+    $("#container").empty();
+    $(".pagination").empty();
+    fetch("https://react-midterm.kreosoft.space/api/details/" + id)
+    .then((response) => {
+        return response.json();
+    })
+    .then((json) => {
+        $("#container").empty();
+        let template = $('#card-template-2');
+        let array = json;
+        let id_feedback='';
+                let block = template.clone();
+                block.find(".title").text(array.name);
+                
+                block.find(".image").attr("src", array.poster);
+            
+                block.find(".time").text(array.time + " мин.");
+          
+                block.find(".film-description").text(array.description);
+                block.removeClass("d-none");
+                $("#container").append(block);
+                let feedback = GetFeedback(json.reviews,id_feedback);
+
+                if(user.auth){
+                    if(feedback==false){
+                        TakeFeedback(id);
+                    }
+                    else{
+                        $('#my-feedback-form').addClass("d-none");
+                        let id_feedback = $(`.${user.user.id}`).attr("id");
+                        $('#my-feedback-form').after($(`#${id_feedback}`));
+                        deleteFeedback(id,id_feedback);
+                        $('#edit-feedback').click(function(){
+                            $('#my-feedback-form').removeClass("d-none");
+                            EditFeedback(id,id_feedback);
+
+                        })
+                    }
+                }
+                else{
+                    $('#button-give-films').addClass("d-none");
+                    $('#my-feedback-form').addClass("d-none");
+                }
+     });
+}
