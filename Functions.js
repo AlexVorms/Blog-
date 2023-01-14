@@ -35,19 +35,56 @@ export function ChangeNavbar(){
     $(".registration-item").html('<li class="nav-item registration-item exit"><a class="nav-link active" aria-current="page">Выйти</a></li>');
 }
 
-export async function Exit(){
-    let token = localStorage.getItem("jwt");
-    const response = await fetch('https://react-midterm.kreosoft.space/api/account/logout', {
-      method:'POST',
-      headers: {
-        "Authorization": `Bearer ${token}`
-      },
-    });
-    if (!response.ok) {
-    }
-    else{
-        localStorage.setItem("jwt", null);
-        window.location.href = 'http://127.0.0.1:5500/test.html';
-        return true;
-    }
+export async function sendData(url, data){
+  const response = await fetch(url, {
+    method:'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Ошибка по адресу ${url}, статус ошибки ${response.status}`);
   }
+  else{
+    window.location.href = 'http://127.0.0.1:5500/test.html';
+  }
+}
+
+export async function sendDataAuth(url, data){
+  const response = await fetch(url, {
+    method:'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+  }
+  else{
+      let json = await response.json();
+      localStorage.setItem("jwt", json.token);
+      window.location.href = 'http://127.0.0.1:5500/test.html';
+      return true;
+  }
+}
+
+export async function GetFeedbackPost(url){
+  let token = localStorage.getItem("jwt");
+       const response = await fetch(url,{
+          method:'GET',
+          headers: {
+              "Authorization": `Bearer ${token}`
+          }
+      });
+    
+      if (!response.ok) {
+        if (response.status==401){
+              localStorage.setItem("jwt", null);
+          window.location.href = 'http://127.0.0.1:5500/test.html';
+        }
+      }
+      return await response.json();
+}
