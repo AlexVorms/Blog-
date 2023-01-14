@@ -70,3 +70,21 @@ export async function sendDataAuth(url, data){
         return true;
     }
   }
+
+  export async function GetFeedbackPost(url){
+    let token = localStorage.getItem("jwt");
+         const response = await fetch(url,{
+            method:'GET',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+      
+        if (!response.ok) {
+          if (response.status==401){
+                localStorage.setItem("jwt", null);
+            window.location.href = 'http://127.0.0.1:5500/test.html';
+          }
+        }
+        return await response.json();
+  }
